@@ -4,6 +4,7 @@ require('styles/main.css');
 var imgData = require("../data/imagedata.json");
 import React from 'react';
 
+//获取图片的数据
 function getImgUrl(imgData){
 	var imageDataArr = [];
 	for(var i=0,j=imgData.length;i<j;i++){
@@ -14,7 +15,6 @@ function getImgUrl(imgData){
 	return imageDataArr;
 }
 var imageData = getImgUrl(imgData);
-console.log(imageData);
 
 let yeomanImage = require('../images/yeoman.png');
 
