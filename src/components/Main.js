@@ -3,6 +3,7 @@ require('styles/main.css');
 
 var imgData = require("../data/imagedata.json");
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 //获取图片的数据
 function getImgUrl(imgData){
@@ -16,20 +17,19 @@ function getImgUrl(imgData){
 }
 var imageData = getImgUrl(imgData);
 
-let yeomanImage = require('../images/yeoman.png');
+var galleryByReact = React.createClass({
+	render: function(){
+		return (
+			<section className="stage">
+				<section className="img-sec">
+				</section>
+				<nav className="controller-nav">
+				</nav>
+			</section>
+		)
+	}
+})
 
-class AppComponent extends React.Component {
-  render() {
-    return (
-      <div className="index">
-        <img src={yeomanImage} alt="Yeoman Generator" />
-        <div className="notice">Please edit <code>src/components/Main.js</code> to get started!</div>
-      </div>
-    );
-  }
-}
+ReactDOM.render(<galleryByReact />, document.getElementById('app'));
 
-AppComponent.defaultProps = {
-};
-
-export default AppComponent;
+module.exports = galleryByReact;
