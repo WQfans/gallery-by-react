@@ -24,6 +24,23 @@ html body {
 
   background-color: #ddd;
 }
+.image{
+  height: 280px;
+  width:240px;
+}
+.img-sec figcaption{
+  text-align: center;
+}
+.img-figure{
+  width: 320px;
+  height: 360px;
+  margin: 0;
+  padding: 40px;
+
+  background-color: #fff; 
+  box-sizing:border-box;
+
+}
 
 /*comtrol*/
 .controller-nav {
