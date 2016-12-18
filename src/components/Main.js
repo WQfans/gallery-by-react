@@ -66,7 +66,7 @@ var galleryByReact = React.createClass({
 		imageDatas.forEach(function(value,index){
 			imgFigures.push((<ImgFigure data={value} key={'index'+index} />));
 		});
-
+		
 		return (
 			<section className="stage" ref="stage">
 				<section className="img-sec">
