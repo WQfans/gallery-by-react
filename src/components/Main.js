@@ -34,6 +34,30 @@ var ImgFigure = React.createClass({
 
 
 var galleryByReact = React.createClass({
+	Constant: {
+		centerPos:{
+			left:0,
+			right:0
+		},
+		hPosRange: {//水平范围
+			leftSecX: [0,0],
+			rightSecx: [0,0],
+			y: [0,0]
+		},
+		vPosRange: {//垂直范围
+			x: [0,0],
+			topY: [0,0]
+		}
+	},
+
+//计算图片位置
+	componentDidMount: function(){
+		var stageDOM = React.findDOMNode( this.refs.stage),
+			stageWidth = stageDOM.scrollWidth,
+			stageHeight = stageDOM.scrollHeight,
+			halfStageWidth = Math.ceil(stageWidth/2),
+			halfStageHeight = Math.ceil(stageHeight/2);
+	},
 	render: function(){
 
 		var imgFigures = [] ;
@@ -44,7 +68,7 @@ var galleryByReact = React.createClass({
 		});
 
 		return (
-			<section className="stage">
+			<section className="stage" ref="stage">
 				<section className="img-sec">
 					{imgFigures}
 				</section>
