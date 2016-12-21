@@ -20,9 +20,13 @@ var imageDatas = getImgUrl(imgData);
 
 var ImgFigure = React.createClass({
 	render: function(){
+		var styleObj = {};
+		if(this.props.arrange.pos){
+			styleObj = this.props.arrange.pos;
+		}
 		var imageURL = ('../images/'+this.props.data.fileName);
 		return (
-			<figure className='img-figure'>
+			<figure className='img-figure' style={styleObj}>
 				<img className='image' src={imageURL} alt={this.props.data.title} />
 				<figcaption>
 					<h2 className='img-title'>{this.props.data.title}</h2>
@@ -32,7 +36,9 @@ var ImgFigure = React.createClass({
 	}
 })
 
-
+function getRandom(min,max){
+	return Math.floor(Math.random() * (max - min) + min) 
+}
 var galleryByReact = React.createClass({
 	Constant: {
 		centerPos:{
@@ -50,22 +56,131 @@ var galleryByReact = React.createClass({
 		}
 	},
 
+/*
+ *指定居中哪个图片
+*/
+	rearrange : function(centerIndex){
+		var imgsArrangeArr = this.state.imgsArrangeArr,
+			Constant = this.Constant,
+			centerPos = Constant.centerPos,
+			hPosRange = Constant.hPosRange,
+			vPosRange = Constant.vPosRange,
+
+			hPosRangeLeftSecX = hPosRange.leftSecX,
+			hPosRangeRightSecX = hPosRange.rightSecx,
+			hPosRangeY = hPosRange.y,
+			vPosRangeTopY = vPosRange.topY,
+			vPosRangeX = vPosRange.x,
+
+			
+			topImgNum = Math.floor(Math.random()*2),
+			topImgSpliceIndex = 0,
+
+			imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex,1);
+
+			imgsArrangeCenterArr[0].pos = centerPos;
+
+			console.log(Constant)
+
+			topImgSpliceIndex =Math.floor(Math.random()*(imgsArrangeArr.length - topImgNum)) ;
+			var imgsArrangeTopArr = imgsArrangeArr.splice(topImgSpliceIndex,topImgNum);
+
+			//布局上侧的
+			imgsArrangeTopArr.forEach(function(value,index){
+				imgsArrangeTopArr[index].pos = {
+						top: getRandom(vPosRangeTopY[0],vPosRangeTopY[1]),
+						left: getRandom(vPosRangeX[0],vPosRangeX[1])
+				}
+			});
+
+			//两侧
+			for(var i = 0,j = imgsArrangeArr.length,k = j/2;i<j;i++){
+				var hPosRangeLORX = null;
+
+				if(i<k){
+					hPosRangeLORX = hPosRangeLeftSecX;
+				}else{
+					hPosRangeLORX = hPosRangeRightSecX;
+				}
+			  imgsArrangeArr[i].pos = {
+				top: getRandom(hPosRangeY[0],hPosRangeY[1]),
+				left: getRandom(hPosRangeLORX[0],hPosRangeLORX[1])
+			  }
+			}
+
+			
+
+			if(imgsArrangeTopArr && imgsArrangeTopArr[0]){
+				imgsArrangeArr.splice(topImgSpliceIndex,0,imgsArrangeTopArr[0]);
+			}
+
+			imgsArrangeArr.splice(centerIndex,0,imgsArrangeCenterArr[0]);
+
+			this.setState({
+				imgsArrangeArr: imgsArrangeArr
+			})
+	},
+
+	getInitialState: function(){
+		return {
+			imgsArrangeArr: [
+			],
+		}
+	},
+
 //计算图片位置
 	componentDidMount: function(){
-		var stageDOM = React.findDOMNode( this.refs.stage),
+		var stageDOM = ReactDOM.findDOMNode(this.refs.stage),
 			stageWidth = stageDOM.scrollWidth,
 			stageHeight = stageDOM.scrollHeight,
 			halfStageWidth = Math.ceil(stageWidth/2),
 			halfStageHeight = Math.ceil(stageHeight/2);
+
+		var imgFigureDOM = ReactDOM.findDOMNode(this.refs.imgFigure0),
+			imgWidth = imgFigureDOM.scrollWidth,
+			imgHeight = imgFigureDOM.scrollHeight,
+			halfImgWidth = Math.ceil(imgWidth/2),
+			halfImgHeight = Math.ceil(imgHeight/2);
+
+		//中心图片
+		this.Constant.centerPos = {
+			left: halfStageWidth - halfImgWidth,
+			top: halfStageHeight - halfImgHeight
+		}
+
+		//左右范围
+		this.Constant.hPosRange.leftSecX[0] = -halfImgWidth;
+		this.Constant.hPosRange.leftSecX[1] = halfStageWidth - 3 * halfImgWidth;
+		this.Constant.hPosRange.rightSecx[0] = halfStageWidth + halfImgWidth;
+		this.Constant.hPosRange.rightSecx[1] = stageWidth - halfImgWidth;
+		this.Constant.hPosRange.y[0] = -halfImgHeight;
+		this.Constant.hPosRange.y[1] = stageHeight - halfImgHeight;
+
+		//上下范围
+		this.Constant.vPosRange.topY[0] = -halfImgHeight;
+		this.Constant.vPosRange.topY[1] = halfStageHeight - 3 * halfImgHeight;
+		this.Constant.vPosRange.x[0] = halfStageWidth - imgWidth;
+		this.Constant.vPosRange.x[1] = halfImgWidth;
+
+		this.rearrange(0);
+
 	},
 	render: function(){
 
 		var imgFigures = [] ;
 		var controlUnits = [];
-
 		imageDatas.forEach(function(value,index){
-			imgFigures.push((<ImgFigure data={value} key={'index'+index} />));
-		});
+			if(!this.state.imgsArrangeArr[index]){
+				this.state.imgsArrangeArr[index] = {
+					pos: {
+						left: 0,
+						top: 0
+					}
+				}
+			}
+			imgFigures.push((<ImgFigure data={value} key={'index'+index} ref={'imgFigure' + index}
+				arrange={this.state.imgsArrangeArr[index]} />));
+		}.bind(this));
 		
 		return (
 			<section className="stage" ref="stage">
