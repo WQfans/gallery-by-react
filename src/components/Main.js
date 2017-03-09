@@ -6,9 +6,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 //获取图片的数据
-function getImgUrl(imgData){
+function getImgUrl(imgData) {
 	var imageDataArr = [];
-	for(var i=0,j=imgData.length;i<j;i++){
+	for (var i = 0, j = imgData.length; i < j; i++) {
 		var singleImageData = imgData[i];
 		// singleImageData.imageUrl = require('../images/'+singleImageData.fileName);
 		imageDataArr[i] = singleImageData;
@@ -19,23 +19,29 @@ var imageDatas = getImgUrl(imgData);
 
 
 var ImgFigure = React.createClass({
-	handleClick: function(e){
+	/*
+	点击处理函数
+	*/
+	handleClick: function(e) {
 		this.props.inverse();
 
 		e.stopPropagation();
 		e.preventDefault();
 	},
-	render: function(){
+	render: function() {
 		var styleObj = {};
-		if(this.props.arrange.pos){
+		if (this.props.arrange.pos) {
 			styleObj = this.props.arrange.pos;
 		}
-		if(this.props.arrange.rotate){
-			styleObj['-webkit-transform'] = 'rotate(' + this.props.arrange.rotate + 'deg)'; 
+		if (this.props.arrange.rotate) {
+			styleObj['-webkit-transform'] = 'rotate(' + this.props.arrange.rotate + 'deg)';
 		}
-		var imageURL = ('../images/'+this.props.data.fileName);
+		var imageURL = ('../images/' + this.props.data.fileName);
+
+		var imgFigureClassName = "img-figure";
+		imgFigureClassName = imgFigureClassName + (this.props.arrange.isInverse ? ' no_inverse' : ' is_inverse');
 		return (
-			<figure className='img-figure' style={styleObj} onClick={this.handleClick}>
+			<figure className={imgFigureClassName} style={styleObj} onClick={this.handleClick}>
 				<img className='image' src={imageURL} alt={this.props.data.title} />
 				<figcaption>
 					<h2 className='img-title'>{this.props.data.title}</h2>
@@ -48,35 +54,35 @@ var ImgFigure = React.createClass({
 	}
 })
 
-function getRandom(min,max){
-	return Math.floor(Math.random() * (max - min) + min) 
+function getRandom(min, max) {
+	return Math.floor(Math.random() * (max - min) + min)
 }
 
-function get30deRandom(){
-	return((Math.random() >0.5 ? '' : '-') + Math.ceil(Math.random() * 30));
+function get30deRandom() {
+	return ((Math.random() > 0.5 ? '' : '-') + Math.ceil(Math.random() * 30));
 }
 var galleryByReact = React.createClass({
 	Constant: {
-		centerPos:{
-			left:0,
-			right:0
+		centerPos: {
+			left: 0,
+			right: 0
 		},
-		hPosRange: {//水平范围
-			leftSecX: [0,0],
-			rightSecx: [0,0],
-			y: [0,0]
+		hPosRange: { //水平范围
+			leftSecX: [0, 0],
+			rightSecx: [0, 0],
+			y: [0, 0]
 		},
-		vPosRange: {//垂直范围
-			x: [0,0],
-			topY: [0,0]
+		vPosRange: { //垂直范围
+			x: [0, 0],
+			topY: [0, 0]
 		}
 	},
 
 	/*
 	翻转
 	*/
-	inverse: function(index){
-		return function(){
+	inverse: function(index) {
+		return function() {
 			var imgsArrangeArr = this.state.imgsArrangeArr;
 
 			imgsArrangeArr[index].isInverse = !imgsArrangeArr[index].isInverse;
@@ -86,10 +92,10 @@ var galleryByReact = React.createClass({
 			})
 		}.bind(this);
 	},
-/*
- *指定居中哪个图片
-*/
-	rearrange : function(centerIndex){
+	/*
+	 *指定居中哪个图片
+	 */
+	rearrange: function(centerIndex) {
 		var imgsArrangeArr = this.state.imgsArrangeArr,
 			Constant = this.Constant,
 			centerPos = Constant.centerPos,
@@ -102,65 +108,63 @@ var galleryByReact = React.createClass({
 			vPosRangeTopY = vPosRange.topY,
 			vPosRangeX = vPosRange.x,
 
-			
-			topImgNum = Math.floor(Math.random()*2),
+
+			topImgNum = Math.floor(Math.random() * 2),
 			topImgSpliceIndex = 0,
 
-			imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex,1);
+			imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex, 1);
 
-			imgsArrangeCenterArr[0].pos = centerPos;
+		imgsArrangeCenterArr[0].pos = centerPos;
 
-			//中间不需要旋转
-			imgsArrangeCenterArr[0].rotate = 0;
+		//中间不需要旋转
+		imgsArrangeCenterArr[0].rotate = 0;
 
-			console.log(Constant)
+		topImgSpliceIndex = Math.floor(Math.random() * (imgsArrangeArr.length - topImgNum));
+		var imgsArrangeTopArr = imgsArrangeArr.splice(topImgSpliceIndex, topImgNum);
 
-			topImgSpliceIndex =Math.floor(Math.random()*(imgsArrangeArr.length - topImgNum)) ;
-			var imgsArrangeTopArr = imgsArrangeArr.splice(topImgSpliceIndex,topImgNum);
-
-			//布局上侧的
-			imgsArrangeTopArr.forEach(function(value,index){
-				imgsArrangeTopArr[index] = {
-						pos:{
-							top: getRandom(vPosRangeTopY[0],vPosRangeTopY[1]),
-							left: getRandom(vPosRangeX[0],vPosRangeX[1])
-						},
-						rotate: get30deRandom()
-				}
-			});
-
-			//两侧
-			for(var i = 0,j = imgsArrangeArr.length,k = j/2;i<j;i++){
-				var hPosRangeLORX = null;
-
-				if(i<k){
-					hPosRangeLORX = hPosRangeLeftSecX;
-				}else{
-					hPosRangeLORX = hPosRangeRightSecX;
-				}
-			  imgsArrangeArr[i] = {
-				pos:{
-					top: getRandom(hPosRangeY[0],hPosRangeY[1]),
-					left: getRandom(hPosRangeLORX[0],hPosRangeLORX[1])
+		//布局上侧的
+		imgsArrangeTopArr.forEach(function(value, index) {
+			imgsArrangeTopArr[index] = {
+				pos: {
+					top: getRandom(vPosRangeTopY[0], vPosRangeTopY[1]),
+					left: getRandom(vPosRangeX[0], vPosRangeX[1])
 				},
 				rotate: get30deRandom()
-			  }
 			}
+		});
 
-			
+		//两侧
+		for (var i = 0, j = imgsArrangeArr.length, k = j / 2; i < j; i++) {
+			var hPosRangeLORX = null;
 
-			if(imgsArrangeTopArr && imgsArrangeTopArr[0]){
-				imgsArrangeArr.splice(topImgSpliceIndex,0,imgsArrangeTopArr[0]);
+			if (i < k) {
+				hPosRangeLORX = hPosRangeLeftSecX;
+			} else {
+				hPosRangeLORX = hPosRangeRightSecX;
 			}
+			imgsArrangeArr[i] = {
+				pos: {
+					top: getRandom(hPosRangeY[0], hPosRangeY[1]),
+					left: getRandom(hPosRangeLORX[0], hPosRangeLORX[1])
+				},
+				rotate: get30deRandom()
+			}
+		}
 
-			imgsArrangeArr.splice(centerIndex,0,imgsArrangeCenterArr[0]);
 
-			this.setState({
-				imgsArrangeArr: imgsArrangeArr
-			})
+
+		if (imgsArrangeTopArr && imgsArrangeTopArr[0]) {
+			imgsArrangeArr.splice(topImgSpliceIndex, 0, imgsArrangeTopArr[0]);
+		}
+
+		imgsArrangeArr.splice(centerIndex, 0, imgsArrangeCenterArr[0]);
+
+		this.setState({
+			imgsArrangeArr: imgsArrangeArr
+		})
 	},
 
-	getInitialState: function(){
+	getInitialState: function() {
 		return {
 			imgsArrangeArr: [
 				/*pos: {
@@ -175,19 +179,19 @@ var galleryByReact = React.createClass({
 		}
 	},
 
-//计算图片位置
-	componentDidMount: function(){
+	//计算图片位置
+	componentDidMount: function() {
 		var stageDOM = ReactDOM.findDOMNode(this.refs.stage),
 			stageWidth = stageDOM.scrollWidth,
 			stageHeight = stageDOM.scrollHeight,
-			halfStageWidth = Math.ceil(stageWidth/2),
-			halfStageHeight = Math.ceil(stageHeight/2);
+			halfStageWidth = Math.ceil(stageWidth / 2),
+			halfStageHeight = Math.ceil(stageHeight / 2);
 
 		var imgFigureDOM = ReactDOM.findDOMNode(this.refs.imgFigure0),
 			imgWidth = imgFigureDOM.scrollWidth,
 			imgHeight = imgFigureDOM.scrollHeight,
-			halfImgWidth = Math.ceil(imgWidth/2),
-			halfImgHeight = Math.ceil(imgHeight/2);
+			halfImgWidth = Math.ceil(imgWidth / 2),
+			halfImgHeight = Math.ceil(imgHeight / 2);
 
 		//中心图片
 		this.Constant.centerPos = {
@@ -212,24 +216,25 @@ var galleryByReact = React.createClass({
 		this.rearrange(0);
 
 	},
-	render: function(){
+	render: function() {
 
-		var imgFigures = [] ;
+		var imgFigures = [];
 		var controlUnits = [];
-		imageDatas.forEach(function(value,index){
-			if(!this.state.imgsArrangeArr[index]){
+		imageDatas.forEach(function(value, index) {
+			if (!this.state.imgsArrangeArr[index]) {
 				this.state.imgsArrangeArr[index] = {
 					pos: {
 						left: 0,
 						top: 0
 					},
-					rotate: 0
+					rotate: 0,
+					isInverse: false,
 				}
 			}
 			imgFigures.push((<ImgFigure data={value} key={'index'+index} ref={'imgFigure' + index}
 				arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)}/>));
 		}.bind(this));
-		
+
 		return (
 			<section className="stage" ref="stage">
 				<section className="img-sec">
