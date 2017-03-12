@@ -23,7 +23,12 @@ var ImgFigure = React.createClass({
 	点击处理函数
 	*/
 	handleClick: function(e) {
-		this.props.inverse();
+
+		if(this.props.arrange.isCenter){
+			this.props.inverse();
+		}else{
+			this.props.center();
+		}
 
 		e.stopPropagation();
 		e.preventDefault();
@@ -36,9 +41,13 @@ var ImgFigure = React.createClass({
 		if (this.props.arrange.rotate) {
 			styleObj['-webkit-transform'] = 'rotate(' + this.props.arrange.rotate + 'deg)';
 		}
+
+		if (this.props.arrange.isCenter){
+			styleObj.zindex = 11;
+		}
 		var imageURL = ('../images/' + this.props.data.fileName);
 
-		var imgFigureClassName = "img-figure";
+		var imgFigureClassName = 'img-figure';
 		imgFigureClassName = imgFigureClassName + (this.props.arrange.isInverse ? ' no_inverse' : ' is_inverse');
 		return (
 			<figure className={imgFigureClassName} style={styleObj} onClick={this.handleClick}>
@@ -114,10 +123,12 @@ var galleryByReact = React.createClass({
 
 			imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex, 1);
 
-		imgsArrangeCenterArr[0].pos = centerPos;
-
-		//中间不需要旋转
-		imgsArrangeCenterArr[0].rotate = 0;
+		imgsArrangeCenterArr[0] = {
+				pos: centerPos,
+				rotate: 0,
+				isCenter: true
+			}
+			//中间不需要旋转
 
 		topImgSpliceIndex = Math.floor(Math.random() * (imgsArrangeArr.length - topImgNum));
 		var imgsArrangeTopArr = imgsArrangeArr.splice(topImgSpliceIndex, topImgNum);
@@ -129,7 +140,8 @@ var galleryByReact = React.createClass({
 					top: getRandom(vPosRangeTopY[0], vPosRangeTopY[1]),
 					left: getRandom(vPosRangeX[0], vPosRangeX[1])
 				},
-				rotate: get30deRandom()
+				rotate: get30deRandom(),
+				isCenter: false
 			}
 		});
 
@@ -147,7 +159,8 @@ var galleryByReact = React.createClass({
 					top: getRandom(hPosRangeY[0], hPosRangeY[1]),
 					left: getRandom(hPosRangeLORX[0], hPosRangeLORX[1])
 				},
-				rotate: get30deRandom()
+				rotate: get30deRandom(),
+				isCenter: false
 			}
 		}
 
@@ -164,6 +177,15 @@ var galleryByReact = React.createClass({
 		})
 	},
 
+	/*
+	 *居中对应index的照片
+	 */
+	center: function(index) {
+		return function() {
+			this.rearrange(index);
+		}.bind(this)
+	},
+
 	getInitialState: function() {
 		return {
 			imgsArrangeArr: [
@@ -172,10 +194,10 @@ var galleryByReact = React.createClass({
 						top: 0
 					},
 					rotate: 0,
-					isInverse: false
+					isInverse: false,
+					isCenter: false
 				*/
-
-			],
+			]
 		}
 	},
 
@@ -229,10 +251,11 @@ var galleryByReact = React.createClass({
 					},
 					rotate: 0,
 					isInverse: false,
+					isCenter: false
 				}
 			}
 			imgFigures.push((<ImgFigure data={value} key={'index'+index} ref={'imgFigure' + index}
-				arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)}/>));
+				arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)}/>));
 		}.bind(this));
 
 		return (
