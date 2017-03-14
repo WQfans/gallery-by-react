@@ -1,71 +1,131 @@
 html body {
-  width: 100%;
-  height: 100%;
-  background-color: #222;
+    width: 100%;
+    height: 100%;
+    background-color: #222;
 }
 
 .app {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
+
 
 /* stage*/
+
 .stage {
-  position: relative;
-  width: 100%;
-  height: 1000px;
+    position: relative;
+    width: 100%;
+    height: 960px;
 }
+
+
 /* image*/
+
 .img-sec {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    perspective: 1800px;
+    background-color: #ddd;
+}
 
-  background-color: #ddd;
+.image {
+    height: 260px;
+    width: 240px;
 }
-.image{
-  height: 260px;
-  width:240px;
-}
-.img-sec figcaption{
-  text-align: center;
-}
-.img-figure{
-  position: absolute;
-  width: 320px;
-  height: 360px;
-  margin: 0;
-  padding: 40px;
 
-  background-color: #fff; 
-  box-sizing:border-box;
+.img-sec figcaption {
+    text-align: center;
+}
 
-  cursor: pointer;
+.img-figure {
+    position: absolute;
+    width: 320px;
+    height: 360px;
+    margin: 0;
+    padding: 40px;
+    background-color: #fff;
+    box-sizing: border-box;
+    cursor: pointer;
+    transform-origin: 0 50% 0;
+    transform-style: preserve-3d;
+    transition: left .6s ease-in-out, top .6s ease-in-out;
+    transition: 0.6s;
 }
-.img-title{
-  margin: 20px 0 0 0;
-  color: #a7a0a2;
-  font-size: 16px;
+
+.img-title {
+    margin: 20px 0 0 0;
+    color: #a7a0a2;
+    font-size: 16px;
 }
-.img-figure.no_inverse .image, .img-figure.no_inverse .img-title{
-  display: none;
+
+.img-figure.is_inverse {
+    transform: translate(320px) rotateY(180deg);
+    transition: 0.6s;
+    img {
+        visibility: hidden;
+    }
 }
-.img-figure.no_inverse .img-back{
-  display: block;
+
+.img-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 50px 40px;
+    overflow: auto;
+    color: #a7a0a2;
+    font-size: 22px;
+    line-height: 1.25;
+    text-align: left;
+    background-color: #fff;
+    box-sizing: border-box;
+    transform: rotateY(180deg);
+    backface-visibility: hidden;
 }
-.img-figure.is_inverse .img-back{
-  display: none;
-}
-.img-figure.is_inverse .image, .img-figure.is_inverse .img-title{
-  display: block;
-}
+
+
 /*comtrol*/
-.controller-nav {
-  position: absolute;
-  left: 0;
-  bottom: 30px;
-  z-index: 102;
 
-  text-align: center;
+.controller-nav {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 30px;
+    z-index: 102;
+    text-align: center;
+}
+
+.controller-unit {
+    display: inline-block;
+    margin: 0 5px;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #aaa;
+    border-radius: 50%;
+    transform: scale(.5);
+}
+
+.controller-unit.is_center {
+    background-color: #888;
+    transform: scale(1);
+    transition: 0.6s;
+}
+
+.controller-unit.is_center img {
+    width: 25px;
+    height: 30px;
+}
+
+.controller-unit.is_center.is_inverse {
+    background-color: #555;
+    transform: rotateY(180deg);
+}
+
+.controller-unit.is_center.is_inverse img {
+    transform: rotateY(0deg);
 }

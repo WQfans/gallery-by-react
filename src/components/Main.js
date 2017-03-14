@@ -39,16 +39,16 @@ var ImgFigure = React.createClass({
 			styleObj = this.props.arrange.pos;
 		}
 		if (this.props.arrange.rotate) {
-			styleObj['-webkit-transform'] = 'rotate(' + this.props.arrange.rotate + 'deg)';
+			styleObj['WebkitTransform'] = 'rotate(' + this.props.arrange.rotate + 'deg)';
 		}
 
 		if (this.props.arrange.isCenter){
-			styleObj.zindex = 11;
+			styleObj.zIndex = 11;
 		}
 		var imageURL = ('../images/' + this.props.data.fileName);
 
 		var imgFigureClassName = 'img-figure';
-		imgFigureClassName = imgFigureClassName + (this.props.arrange.isInverse ? ' no_inverse' : ' is_inverse');
+		imgFigureClassName = imgFigureClassName + (this.props.arrange.isInverse ? ' is_inverse' : '');
 		return (
 			<figure className={imgFigureClassName} style={styleObj} onClick={this.handleClick}>
 				<img className='image' src={imageURL} alt={this.props.data.title} />
@@ -70,6 +70,29 @@ function getRandom(min, max) {
 function get30deRandom() {
 	return ((Math.random() > 0.5 ? '' : '-') + Math.ceil(Math.random() * 30));
 }
+
+var ControlUnit = React.createClass({
+	handleClick: function(e){
+		if(this.props.arrange.isCenter){
+			this.props.inverse();
+		}else{
+			this.props.center();
+		}
+
+		e.preventDefault;
+		e.stopPropagation;
+	},
+	render: function(){
+		var controllerClassName = 'controller-unit';
+		controllerClassName = controllerClassName + (this.props.arrange.isInverse ? ' is_inverse' : '');
+		controllerClassName = controllerClassName + (this.props.arrange.isCenter ? ' is_center' : '');
+		return (
+			<span className={controllerClassName} onClick={this.handleClick}>
+				<img className={controllerClassName} src='../images/arrow.png'/>
+			</span>
+		)
+	}
+})
 var galleryByReact = React.createClass({
 	Constant: {
 		centerPos: {
@@ -255,6 +278,9 @@ var galleryByReact = React.createClass({
 				}
 			}
 			imgFigures.push((<ImgFigure data={value} key={'index'+index} ref={'imgFigure' + index}
+				arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)}/>));
+
+			controlUnits.push((<ControlUnit key={'controlUnit'+index} ref={'controlUnit' + index}
 				arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)}/>));
 		}.bind(this));
 
